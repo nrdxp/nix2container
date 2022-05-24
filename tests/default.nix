@@ -52,6 +52,13 @@ let
       image = examples.nonReproducible;
       pattern = "A non reproducible image built the";
     };
+    # Ensure the Nix database is correctly initialized by querying the
+    # closure of the Nix binary.
+    nix = testScript {
+      image = examples.nix;
+      command = "nix-store -qR ${pkgs.nix}";
+      pattern = "${pkgs.nix}";
+    };
     # The /nix have to be explicitly present in the archive with 755 perms
     nonRegressionIssue12 = pkgs.runCommand "test-script" { buildInputs = [pkgs.jq pkgs.gnutar]; } ''
       set -e

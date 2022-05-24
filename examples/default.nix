@@ -8,4 +8,5 @@
   uwsgi = pkgs.callPackage ./uwsgi { inherit nix2container; };
   openbar = pkgs.callPackage ./openbar.nix { inherit nix2container; };
   layered = pkgs.callPackage ./layered.nix { inherit nix2container; };
+  nix = pkgs.callPackage ./nix.nix { inherit nix2container; };
 }
