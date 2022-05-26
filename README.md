@@ -65,6 +65,23 @@ $ podman run -it bash
 - [`layered`](./examples/layered.nix): build a layered image as described in [this blog post](https://grahamc.com/blog/nix-and-layered-docker-images)
 
 
+## API
+
+### `nix2container.buildImage`
+
+Arguments:
+
+- **name**: the name of the image
+- **tag**: the tag of the image. Default to the image output hash.
+- **config**: an attribute set describing an image configuration as
+    defined in #
+    https://github.com/opencontainers/image-spec/blob/8b9d41f48198a7d6d0a5c1a12dc2d1f7f47fc97f/specs-go/v1/config.go#L23
+
+
+### `nix2container.buildLayer`
+
+### `nix2container.pullImage`
+
 ## Isolate dependencies in dedicated layers
 
 It is possible to isolate application dependencies in a dedicated
