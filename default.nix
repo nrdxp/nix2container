@@ -2,7 +2,7 @@
 let
   l = pkgs.lib // builtins;
 
-  nix2containerUtil = pkgs.buildGoModule rec {
+  nix2containerUtil = pkgs.buildGoModule {
     pname = "nix2container";
     version = "0.0.1";
     doCheck = false;
@@ -54,6 +54,14 @@ let
   copyToRegistry = image: pkgs.writeShellScriptBin "copy-to-registry" ''
     echo "Copy to Docker registry image ${image.imageName}:${image.imageTag}"
     ${skopeo-nix2container}/bin/skopeo --insecure-policy copy nix:${image} docker://${image.imageName}:${image.imageTag} $@
+
+    # Push extra tags if present
+    if [[ ! -z "${l.concatStringsSep " " image.extraTags}" ]]; then
+      for tag in ${l.concatStringsSep " " image.extraTags}; do
+        echo "Copy to Docker registry image ${image.imageName}:$tag"
+        ${skopeo-nix2container}/bin/skopeo --insecure-policy copy nix:${image} docker://${image.imageName}:$tag $@
+      done
+    fi
   '';
 
   copyTo = image: pkgs.writeShellScriptBin "copy-to" ''
@@ -239,6 +247,7 @@ let
     name,
     # Image tag, when null then the nix output hash will be used.
     tag ? null,
+    extraTags ? [],
     # An attribute set describing an image configuration as defined in
     # https://github.com/opencontainers/image-spec/blob/8b9d41f48198a7d6d0a5c1a12dc2d1f7f47fc97f/specs-go/v1/config.go#L23
     config ? {},
@@ -332,6 +341,7 @@ let
         inherit imageName;
         passthru = {
           inherit imageTag;
+          inherit extraTags;
           # provide a cheap to evaluate image reference for use with external tools like docker
           # DO NOT use as an input to other derivations, as there is no guarantee that the image
           # reference will exist in the store.
